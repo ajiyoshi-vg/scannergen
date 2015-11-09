@@ -7,8 +7,14 @@ import (
 	"strings"
 
 	"github.com/acsellers/inflections"
-	"github.com/drone/sqlgen/parse"
+	"github.com/ajiyoshi-vg/sqlgen/parse"
 )
+
+// WritePackage writes the Go package header to
+// writer w with the given package name.
+func writePackage(w io.Writer, name string) {
+	fmt.Fprintf(w, sPackage, name)
+}
 
 func writeImports(w io.Writer, tree *parse.Node, pkgs ...string) {
 	var pmap = map[string]struct{}{}
@@ -226,25 +232,6 @@ func writeRowsFunc(w io.Writer, tree *parse.Node) {
 		tree.Type,
 		buf3.String(),
 	)
-}
-
-func writeSelectRow(w io.Writer, tree *parse.Node) {
-	fmt.Fprintf(w, sSelectRow, tree.Type, tree.Type, tree.Type)
-}
-
-func writeSelectRows(w io.Writer, tree *parse.Node) {
-	plural := inflections.Pluralize(tree.Type)
-	fmt.Fprintf(w, sSelectRows, plural, tree.Type, plural)
-}
-
-func writeInsertFunc(w io.Writer, tree *parse.Node) {
-	// TODO this assumes I'm using the ID field.
-	// we should not make that assumption
-	fmt.Fprintf(w, sInsert, tree.Type, tree.Type, tree.Type)
-}
-
-func writeUpdateFunc(w io.Writer, tree *parse.Node) {
-	fmt.Fprintf(w, sUpdate, tree.Type, tree.Type, tree.Type)
 }
 
 // join is a helper function that joins nodes

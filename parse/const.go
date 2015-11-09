@@ -24,6 +24,12 @@ const (
 	String
 	Slice
 	Struct
+	PtrInt
+	PtrInt8
+	PtrInt16
+	PtrInt32
+	PtrInt64
+	PtrString
 )
 
 var Types = map[string]uint8{
@@ -45,4 +51,10 @@ var Types = map[string]uint8{
 	"interface{}": Interface,
 	"[]byte":      Bytes,
 	"string":      String,
+	"*int":        PtrInt,
+	"*int8":       PtrInt8,
+	"*int16":      PtrInt16,
+	"*int32":      PtrInt32,
+	"*int64":      PtrInt64,
+	"*string":     PtrString,
 }

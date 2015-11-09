@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/acsellers/inflections"
-	"github.com/drone/sqlgen/parse"
+	"github.com/ajiyoshi-vg/sqlgen/parse"
 )
 
 func Load(tree *parse.Node) *Table {

@@ -130,7 +130,18 @@ func buildNode(parent *Node, expr ast.Expr, name, tag string) error {
 			goto invalidType
 		}
 		if innerIdent.Obj == nil || innerIdent.Obj.Decl == nil {
-			goto invalidType
+			t := "*" + innerIdent.Name
+			node := &Node{
+				Name: name,
+				Type: t,
+				Kind: Types[t],
+			}
+			node.Tags, err = parseTag(tag)
+			if err != nil {
+				return err
+			}
+			parent.append(node)
+			return nil
 		}
 		spec, ok := innerIdent.Obj.Decl.(*ast.TypeSpec)
 		if !ok {
@@ -142,6 +153,7 @@ func buildNode(parent *Node, expr ast.Expr, name, tag string) error {
 			return err
 		}
 		if node.Tags.Skip {
+			fmt.Printf("5(%s)\n", node.Tags.Skip)
 			return nil
 		}
 		parent.append(node)

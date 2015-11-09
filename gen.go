@@ -7,8 +7,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/drone/sqlgen/parse"
-	"github.com/drone/sqlgen/schema"
+	"github.com/ajiyoshi-vg/sqlgen/parse"
+	//"github.com/drone/sqlgen/schema"
 )
 
 var (
@@ -17,7 +17,6 @@ var (
 	pkgName    = flag.String("pkg", "main", "output package name; required")
 	typeName   = flag.String("type", "", "type to generate; required")
 	database   = flag.String("db", "sqlite", "sql dialect; required")
-	genSchema  = flag.Bool("schema", true, "generate sql schema and queries")
 	genFuncs   = flag.Bool("funcs", true, "generate sql helper functions")
 	extraFuncs = flag.Bool("extras", true, "generate extra sql helper functions")
 )
@@ -39,32 +38,14 @@ func main() {
 		// TODO
 	}
 
-	// load the Tree into a schema Object
-	table := schema.Load(tree)
-	dialect := schema.New(schema.Dialects[*database])
-
 	var buf bytes.Buffer
 
+	writePackage(&buf, *pkgName)
 	if *genFuncs {
-		writePackage(&buf, *pkgName)
 		writeImports(&buf, tree, "database/sql")
 		writeRowFunc(&buf, tree)
 		writeRowsFunc(&buf, tree)
 		writeSliceFunc(&buf, tree)
-
-		if *extraFuncs {
-			writeSelectRow(&buf, tree)
-			writeSelectRows(&buf, tree)
-			writeInsertFunc(&buf, tree)
-			writeUpdateFunc(&buf, tree)
-		}
-	} else {
-		writePackage(&buf, *pkgName)
-	}
-
-	// write the sql functions
-	if *genSchema {
-		writeSchema(&buf, dialect, table)
 	}
 
 	// formats the generated file using gofmt
