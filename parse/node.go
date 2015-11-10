@@ -16,6 +16,12 @@ func (n *Node) append(node *Node) {
 	n.Nodes = append(n.Nodes, node)
 }
 
+func (n *Node) Each(fn func(*Node)) {
+	for _, node := range n.Nodes {
+		fn(node)
+	}
+}
+
 // Walk traverses the node tree, invoking the callback
 // function for each node that is traversed.
 func (n *Node) Walk(fn func(*Node)) {

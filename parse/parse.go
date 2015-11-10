@@ -13,6 +13,42 @@ var (
 	ErrTypeInvalid  = errors.New("Cannot convert type to a SQL type.")
 )
 
+func ParseAll(path string) (*Node, error) {
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
+	if err != nil {
+		return nil, err
+	}
+
+	root := new(Node)
+	root.Pkg = file.Name.Name
+
+	for _, decl := range file.Decls {
+		gen, ok := decl.(*ast.GenDecl)
+		if !ok {
+			continue
+		}
+
+		spec, ok := gen.Specs[0].(*ast.TypeSpec)
+		if !ok {
+			continue
+		}
+
+		var node = new(Node)
+		node.Name = spec.Name.String()
+		node.Type = spec.Name.String()
+		node.Pkg = file.Name.Name
+		err = buildNodes(node, spec)
+		if err != nil {
+			continue
+		}
+
+		root.append(node)
+	}
+
+	return root, nil
+}
+
 func Parse(path, name string) (*Node, error) {
 
 	var fset = token.NewFileSet()
