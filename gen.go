@@ -12,13 +12,11 @@ import (
 )
 
 var (
-	input      = flag.String("file", "", "input file name; required")
-	output     = flag.String("o", "", "output file name; required")
-	pkgName    = flag.String("pkg", "main", "output package name; required")
-	typeName   = flag.String("type", "", "type to generate; required")
-	database   = flag.String("db", "sqlite", "sql dialect; required")
-	genFuncs   = flag.Bool("funcs", true, "generate sql helper functions")
-	extraFuncs = flag.Bool("extras", true, "generate extra sql helper functions")
+	input    = flag.String("file", "", "input file name; required")
+	output   = flag.String("o", "", "output file name; required")
+	pkgName  = flag.String("pkg", "main", "output package name; required")
+	typeName = flag.String("type", "", "type to generate; required")
+	genFuncs = flag.Bool("funcs", true, "generate sql helper functions")
 )
 
 func main() {
