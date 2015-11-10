@@ -1,31 +1,23 @@
-**sqlgen** generates SQL statements and database helper functions from your Go structs. It can be used in place of a simple ORM or hand-written SQL. See the [demo](https://github.com/drone/sqlgen/tree/master/demo) directory for examples.
+**sqlgen** generates SQL statements and database helper functions from your Go structs. It can be used in place of a simple ORM or hand-written SQL. See the [demo](https://github.com/ajiyoshi-vg/sqlgen/tree/master/demo) directory for examples.
 
 ### Install
 
 Install or upgrade with this command:
 
 ```
-go get -u github.com/drone/sqlgen
+go get -u github.com/ajiyoshi-vg/sqlgen
 ```
 
 ### Usage
 
 ```
 Usage of sqlgen:
-  -type string
-    	type to generate; required
   -file string
     	input file name; required
   -o string
     	output file name
   -pkg string
     	output package name
-  -db string
-    	sql dialect; sqlite, postgres, mysql
-  -schema
-    	generate sql schema and queries; default true
-  -funcs
-    	generate sql helper functions; default true
 ```
 
 ### Tutorial
@@ -43,7 +35,7 @@ type User struct {
 We can run the following command:
 
 ```
-sqlgen -file user.go -type User -pkg demo
+sqlgen -file user.go -pkg demo
 ```
 
 The tool outputs the following generated code:
@@ -71,124 +63,7 @@ func ScanUser(row *sql.Row) (*User, error) {
 	return v, nil
 }
 
-const CreateUserStmt = `
-CREATE TABLE IF NOT EXISTS users (
- user_id     INTEGER
-,user_login  TEXT
-,user_email  TEXT
-);
-`
-
-const SelectUserStmt = `
-SELECT 
- user_id
-,user_login
-,user_email
-FROM users 
-`
-
-const SelectUserRangeStmt = `
-SELECT 
- user_id
-,user_login
-,user_email
-FROM users 
-LIMIT ? OFFSET ?
-`
-
-
 // more functions and sql statements not displayed
-```
-
-This is a great start, but what if we want to specify primary keys, column sizes and more? This may be acheived by annotating your code using Go tags. For example, we can tag the `ID` field to indicate it is a primary key and will auto increment:
-
-```diff
-type User struct {
--   ID      int64
-+   ID      int64  `sql:"pk: true, auto: true"`
-    Login   string
-    Email   string
-}
-```
-
-This information allows the tool to generate smarter SQL statements:
-
-```diff
-CREATE TABLE IF NOT EXISTS users (
--user_id     INTEGER
-+user_id     INTEGER PRIMARY KEY AUTOINCREMENT
-,user_login  TEXT
-,user_email  TEXT
-);
-```
-
-Including SQL statements to select, insert, update and delete data using the primary key:
-
-```Go
-const SelectUserPkeyStmt = `
-SELECT 
- user_id
-,user_login
-,user_email
-WHERE user_id=?
-`
-
-const UpdateUserPkeyStmt = `
-UPDATE users SET 
- user_id=?
-,user_login=?
-,user_email=?
-WHERE user_id=?
-`
-
-const DeleteUserPkeyStmt = `
-DELETE FROM users 
-WHERE user_id=?
-`
-```
-
-We can take this one step further and annotate indexes. In our example, we probably want to make sure the `user_login` field has a unique index:
-
-```diff
-type User struct {
-    ID      int64  `sql:"pk: true, auto: true"`
--   Login   string
-+   Login   string `sql:"unique: user_login"`
-    Email   string
-}
-```
-
-This information instructs the tool to generate the following:
-
-
-```Go
-const CreateUserLogin = `
-CREATE UNIQUE INDEX IF NOT EXISTS user_login ON users (user_login)
-```
-
-The tool also assumes that we probably intend to fetch data from the database using this index. The tool will therefore automatically generate the following queries:
-
-```Go
-const SelectUserLoginStmt = `
-SELECT 
- user_id
-,user_login
-,user_email
-WHERE user_login=?
-`
-
-const UpdateUserLoginStmt = `
-UPDATE users SET 
- user_id=?
-,user_login=?
-,user_email=?
-WHERE user_login=?
-`
-
-const DeleteUserLoginStmt = `
-DELETE FROM users 
-WHERE user_login=?
-`
 ```
 
 ### Nesting
