@@ -78,7 +78,7 @@ func writeSliceFunc(w io.Writer, tree *parse.Node) {
 		fmt.Fprintf(&buf3, "v%d,\n", i)
 
 		// variable setting
-		path := node.Path()[1:]
+		path := node.Path()[2:]
 
 		// if the parent is a ptr struct we
 		// need to create a new
@@ -151,7 +151,7 @@ func writeRowFunc(w io.Writer, tree *parse.Node) {
 		fmt.Fprintf(&buf2, "&v%d,\n", i)
 
 		// variable setting
-		path := node.Path()[1:]
+		path := node.Path()[2:]
 
 		// if the parent is a ptr struct we
 		// need to create a new
@@ -203,7 +203,7 @@ func writeRowsFunc(w io.Writer, tree *parse.Node) {
 		fmt.Fprintf(&buf2, "&v%d,\n", i)
 
 		// variable setting
-		path := node.Path()[1:]
+		path := node.Path()[2:]
 
 		// if the parent is a ptr struct we
 		// need to create a new

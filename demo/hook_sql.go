@@ -203,172 +203,197 @@ func SliceHook(v *Hook) []interface{} {
 	}
 }
 
-func SelectHook(db *sql.DB, query string, args ...interface{}) (*Hook, error) {
-	row := db.QueryRow(query, args...)
-	return ScanHook(row)
-}
+func ScanCommit(row *sql.Row) (*Commit, error) {
+	var v0 string
+	var v1 string
+	var v2 string
+	var v3 string
+	var v4 string
+	var v5 string
+	var v6 string
+	var v7 string
+	var v8 string
 
-func SelectHooks(db *sql.DB, query string, args ...interface{}) ([]*Hook, error) {
-	rows, err := db.Query(query, args...)
+	err := row.Scan(
+		&v0,
+		&v1,
+		&v2,
+		&v3,
+		&v4,
+		&v5,
+		&v6,
+		&v7,
+		&v8,
+	)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return ScanHooks(rows)
+
+	v := &Commit{}
+	v.ID = v0
+	v.Message = v1
+	v.Timestamp = v2
+	v.Author = &Author{}
+	v.Author.Name = v3
+	v.Author.Email = v4
+	v.Author.Username = v5
+	v.Committer = &Author{}
+	v.Committer.Name = v6
+	v.Committer.Email = v7
+	v.Committer.Username = v8
+
+	return v, nil
 }
 
-func InsertHook(db *sql.DB, query string, v *Hook) error {
+func ScanCommits(rows *sql.Rows) ([]*Commit, error) {
+	var err error
+	var vv []*Commit
 
-	res, err := db.Exec(query, SliceHook(v)[1:]...)
-	if err != nil {
-		return err
+	var v0 string
+	var v1 string
+	var v2 string
+	var v3 string
+	var v4 string
+	var v5 string
+	var v6 string
+	var v7 string
+	var v8 string
+
+	for rows.Next() {
+		err = rows.Scan(
+			&v0,
+			&v1,
+			&v2,
+			&v3,
+			&v4,
+			&v5,
+			&v6,
+			&v7,
+			&v8,
+		)
+		if err != nil {
+			return vv, err
+		}
+
+		v := &Commit{}
+		v.ID = v0
+		v.Message = v1
+		v.Timestamp = v2
+		v.Author = &Author{}
+		v.Author.Name = v3
+		v.Author.Email = v4
+		v.Author.Username = v5
+		v.Committer = &Author{}
+		v.Committer.Name = v6
+		v.Committer.Email = v7
+		v.Committer.Username = v8
+
+		vv = append(vv, v)
+	}
+	return vv, rows.Err()
+}
+
+func SliceCommit(v *Commit) []interface{} {
+	var v0 string
+	var v1 string
+	var v2 string
+	var v3 string
+	var v4 string
+	var v5 string
+	var v6 string
+	var v7 string
+	var v8 string
+
+	v0 = v.ID
+	v1 = v.Message
+	v2 = v.Timestamp
+	if v.Author != nil {
+		v3 = v.Author.Name
+		v4 = v.Author.Email
+		v5 = v.Author.Username
 	}
 
-	v.ID, err = res.LastInsertId()
-	return err
+	if v.Committer != nil {
+		v6 = v.Committer.Name
+		v7 = v.Committer.Email
+		v8 = v.Committer.Username
+	}
+
+	return []interface{}{
+		v0,
+		v1,
+		v2,
+		v3,
+		v4,
+		v5,
+		v6,
+		v7,
+		v8,
+	}
 }
 
-func UpdateHook(db *sql.DB, query string, v *Hook) error {
+func ScanAuthor(row *sql.Row) (*Author, error) {
+	var v0 string
+	var v1 string
+	var v2 string
 
-	args := SliceHook(v)[1:]
-	args = append(args, v.ID)
-	_, err := db.Exec(query, args...)
-	return err
+	err := row.Scan(
+		&v0,
+		&v1,
+		&v2,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	v := &Author{}
+	v.Name = v0
+	v.Email = v1
+	v.Username = v2
+
+	return v, nil
 }
 
-const CreateHookStmt = `
-CREATE TABLE IF NOT EXISTS hooks (
- hook_id                      INTEGER PRIMARY KEY AUTO_INCREMENT
-,hook_sha                     VARCHAR(512)
-,hook_after                   VARCHAR(512)
-,hook_before                  VARCHAR(512)
-,hook_created                 BOOLEAN
-,hook_deleted                 BOOLEAN
-,hook_forced                  BOOLEAN
-,hook_head_id                 VARCHAR(512)
-,hook_head_message            VARCHAR(512)
-,hook_head_timestamp          VARCHAR(512)
-,hook_head_author_name        VARCHAR(512)
-,hook_head_author_email       VARCHAR(512)
-,hook_head_author_username    VARCHAR(512)
-,hook_head_committer_name     VARCHAR(512)
-,hook_head_committer_email    VARCHAR(512)
-,hook_head_committer_username VARCHAR(512)
-);
-`
+func ScanAuthors(rows *sql.Rows) ([]*Author, error) {
+	var err error
+	var vv []*Author
 
-const InsertHookStmt = `
-INSERT INTO hooks (
- hook_sha
-,hook_after
-,hook_before
-,hook_created
-,hook_deleted
-,hook_forced
-,hook_head_id
-,hook_head_message
-,hook_head_timestamp
-,hook_head_author_name
-,hook_head_author_email
-,hook_head_author_username
-,hook_head_committer_name
-,hook_head_committer_email
-,hook_head_committer_username
-) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-`
+	var v0 string
+	var v1 string
+	var v2 string
 
-const SelectHookStmt = `
-SELECT 
- hook_id
-,hook_sha
-,hook_after
-,hook_before
-,hook_created
-,hook_deleted
-,hook_forced
-,hook_head_id
-,hook_head_message
-,hook_head_timestamp
-,hook_head_author_name
-,hook_head_author_email
-,hook_head_author_username
-,hook_head_committer_name
-,hook_head_committer_email
-,hook_head_committer_username
-FROM hooks 
-`
+	for rows.Next() {
+		err = rows.Scan(
+			&v0,
+			&v1,
+			&v2,
+		)
+		if err != nil {
+			return vv, err
+		}
 
-const SelectHookRangeStmt = `
-SELECT 
- hook_id
-,hook_sha
-,hook_after
-,hook_before
-,hook_created
-,hook_deleted
-,hook_forced
-,hook_head_id
-,hook_head_message
-,hook_head_timestamp
-,hook_head_author_name
-,hook_head_author_email
-,hook_head_author_username
-,hook_head_committer_name
-,hook_head_committer_email
-,hook_head_committer_username
-FROM hooks 
-LIMIT ? OFFSET ?
-`
+		v := &Author{}
+		v.Name = v0
+		v.Email = v1
+		v.Username = v2
 
-const SelectHookCountStmt = `
-SELECT count(1)
-FROM hooks 
-`
+		vv = append(vv, v)
+	}
+	return vv, rows.Err()
+}
 
-const SelectHookPkeyStmt = `
-SELECT 
- hook_id
-,hook_sha
-,hook_after
-,hook_before
-,hook_created
-,hook_deleted
-,hook_forced
-,hook_head_id
-,hook_head_message
-,hook_head_timestamp
-,hook_head_author_name
-,hook_head_author_email
-,hook_head_author_username
-,hook_head_committer_name
-,hook_head_committer_email
-,hook_head_committer_username
-FROM hooks 
-WHERE hook_id=?
-`
+func SliceAuthor(v *Author) []interface{} {
+	var v0 string
+	var v1 string
+	var v2 string
 
-const UpdateHookPkeyStmt = `
-UPDATE hooks SET 
- hook_id=?
-,hook_sha=?
-,hook_after=?
-,hook_before=?
-,hook_created=?
-,hook_deleted=?
-,hook_forced=?
-,hook_head_id=?
-,hook_head_message=?
-,hook_head_timestamp=?
-,hook_head_author_name=?
-,hook_head_author_email=?
-,hook_head_author_username=?
-,hook_head_committer_name=?
-,hook_head_committer_email=?
-,hook_head_committer_username=? 
-WHERE hook_id=?
-`
+	v0 = v.Name
+	v1 = v.Email
+	v2 = v.Username
 
-const DeleteHookPkeyStmt = `
-DELETE FROM hooks 
-WHERE hook_id=?
-`
+	return []interface{}{
+		v0,
+		v1,
+		v2,
+	}
+}
