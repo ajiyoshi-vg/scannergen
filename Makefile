@@ -6,7 +6,7 @@ build:
 	go build
 
 clean:
-	-rm sqlgen
+	-rm scannergen
 
 clear_all:
 	-rm $(DEMOS) sqlgen
@@ -14,5 +14,5 @@ clear_all:
 demo: clean build $(DEMOS)
 
 %.scanner.go : %.go
-	./sqlgen -file $< -pkg demo -o $@
+	./scannergen -file $< -pkg demo -o $@
 

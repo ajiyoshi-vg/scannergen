@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/ajiyoshi-vg/sqlgen/parse"
+	"github.com/ajiyoshi-vg/scannergen/parse"
 )
 
 var (

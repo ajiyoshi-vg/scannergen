@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/acsellers/inflections"
-	"github.com/ajiyoshi-vg/sqlgen/parse"
+	"github.com/ajiyoshi-vg/scannergen/parse"
 )
 
 // WritePackage writes the Go package header to

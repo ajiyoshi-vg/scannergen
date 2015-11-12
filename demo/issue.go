@@ -1,6 +1,6 @@
 package demo
 
-//go:generate ../sqlgen -file issue.go -type Issue -pkg demo -o issue_sql.go -db postgres
+//go:generate ../scannergen -file issue.go -pkg demo -o issue.scanner.go
 
 type Issue struct {
 	ID       int64 `sql:"pk: true, auto: true"`
