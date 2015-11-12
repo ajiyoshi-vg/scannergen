@@ -116,7 +116,7 @@ type User struct {
 You may specify one of the following SQL dialects when generating your code: `postgres`, `mysql` and `sqlite`. The default value is `sqlite`.
 
 ```
-sqlgen -file user.go -type User -pkg demo -db postgres
+sqlgen -file user.go -pkg demo
 ```
 
 
@@ -127,7 +127,7 @@ Example use with `go:generate`:
 ```Go
 package demo
 
-//go:generate sqlgen -file user.go -type User -pkg demo -o user_sql.go
+//go:generate sqlgen -file user.go -pkg demo -o user_sql.go
 
 type User struct {
     ID     int64  `sql:"pk: true, auto: true"`
